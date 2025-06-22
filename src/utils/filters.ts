@@ -1,4 +1,4 @@
-import type { Match, Tournament } from '@/data'
+import type { Match, Tournament } from '@/types'
 
 export function filterTournamentsBySport({
   allTournaments,
