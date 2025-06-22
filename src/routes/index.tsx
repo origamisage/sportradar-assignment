@@ -4,14 +4,18 @@ import { useMemo, useState } from 'react'
 import { SportSelection } from './SportSelection'
 import { TournamnetSelection } from './TournamnetSelection'
 import { MatchesTable } from './MatchesTable'
-import type { Tournament } from '@/data'
-import { sports as sportsData, tournaments as tournamentsData } from '@/data'
+import type { Match, Tournament } from '@/data'
+import {
+  matches as matchesData,
+  sports as sportsData,
+  tournaments as tournamentsData,
+} from '@/data'
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
-function filterTournaments({
+function filterTournamentsBySport({
   allTournaments,
   selectedSports,
 }: {
@@ -24,6 +28,34 @@ function filterTournaments({
   return allTournaments.filter((tournament) =>
     selectedSports.includes(tournament.sportId),
   )
+}
+
+function filtereMatchesBySportAndTournament({
+  allMatches,
+  allTournaments,
+  selectedTournaments,
+  selectedSports,
+}: {
+  allMatches: Array<Match>
+  allTournaments: Array<Tournament>
+  selectedTournaments: Array<number>
+  selectedSports: Array<number>
+}) {
+  if (selectedTournaments.length > 0) {
+    return allMatches.filter((match) =>
+      selectedTournaments.includes(match.tournamentId),
+    )
+  }
+  if (selectedSports.length > 0) {
+    return allMatches.filter((match) => {
+      const sportId = allTournaments.find(
+        (tournament) => tournament.id === match.tournamentId,
+      )?.sportId
+      if (!sportId) return false
+      return selectedSports.includes(sportId)
+    })
+  }
+  return allMatches
 }
 
 function App() {
@@ -57,8 +89,22 @@ function App() {
   // Filter tournaments based on the selected sports or show all tournaments if no sports are selected
   const filteredTournaments = useMemo(
     () =>
-      filterTournaments({ allTournaments: tournamentsData, selectedSports }),
+      filterTournamentsBySport({
+        allTournaments: tournamentsData,
+        selectedSports,
+      }),
     [selectedSports],
+  )
+
+  const filteredMatches = useMemo(
+    () =>
+      filtereMatchesBySportAndTournament({
+        allMatches: matchesData,
+        allTournaments: tournamentsData,
+        selectedTournaments,
+        selectedSports,
+      }),
+    [selectedTournaments, selectedSports],
   )
 
   return (
@@ -92,7 +138,7 @@ function App() {
             selectedTournaments={selectedTournaments}
             onTournamentToggle={handleTournamentSelectionChange}
           />
-          <MatchesTable />
+          <MatchesTable matches={filteredMatches} />
         </Stack>
       </Flex>
     </Container>

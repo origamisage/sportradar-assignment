@@ -1,8 +1,11 @@
 import { Table } from '@mantine/core'
-import { matches as matchesData } from '@/data'
+import type { Match } from '@/data'
 
-export function MatchesTable() {
-  const rows = matchesData.map((match) => {
+type MatchesTableProps = {
+  matches: Array<Match>
+}
+export function MatchesTable({ matches }: MatchesTableProps) {
+  const rows = matches.map((match) => {
     return (
       <Table.Tr key={match.id} c="dark.3">
         <Table.Td>{formatISODate(match.start_time)}</Table.Td>
