@@ -22,9 +22,12 @@ function filterTournamentsBySport({
   allTournaments: Array<Tournament>
   selectedSports: Array<number>
 }) {
+  // If no sports are selected, show all tournaments
   if (selectedSports.length === 0) {
     return allTournaments
   }
+
+  // Filter tournaments by the selected sports
   return allTournaments.filter((tournament) =>
     selectedSports.includes(tournament.sportId),
   )
@@ -41,13 +44,17 @@ function filtereMatchesBySportAndTournament({
   selectedTournaments: Array<number>
   selectedSports: Array<number>
 }) {
+  // If tournaments are selected, filter matches by the selected tournaments
+  // This takes precedence over the sport selection as tournaments are more granular
   if (selectedTournaments.length > 0) {
     return allMatches.filter((match) =>
       selectedTournaments.includes(match.tournamentId),
     )
   }
+  // If sports are selected, filter matches by the selected sports
   if (selectedSports.length > 0) {
     return allMatches.filter((match) => {
+      // Find the sportId that the match is related to
       const sportId = allTournaments.find(
         (tournament) => tournament.id === match.tournamentId,
       )?.sportId
@@ -65,10 +72,12 @@ function filterMatchesBySearchTerm({
   matches: Array<Match>
   searchTerm: string
 }) {
+  // Normalize the search term to lowercase and trim whitespace
   const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase()
   if (normalizedSearchTerm.length === 0) {
     return matches
   }
+  // Filter matches by home or away teams
   return matches.filter(
     (match) =>
       match.home_team.toLowerCase().includes(normalizedSearchTerm) ||
@@ -84,7 +93,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
 
   const handleSportSelectionChange = (updatedSports: Array<number>) => {
-    // Reset the search term when sports are selected
+    // Reset the search term whenever sport selection changes
     setSearchTerm('')
 
     setSelectedSports(updatedSports)
@@ -105,13 +114,12 @@ function App() {
   const handleTournamentSelectionChange = (
     updatedTournaments: Array<number>,
   ) => {
-    // Reset the search term when tournaments are selected
+    // Reset the search term whenever tournament selection changes
     setSearchTerm('')
     setSelectedTournaments(updatedTournaments)
   }
 
-  // Filter tournaments based on the selected sports or show all tournaments if no sports are selected
-  const filteredTournaments = useMemo(
+  const tournamentsFilteredBySport = useMemo(
     () =>
       filterTournamentsBySport({
         allTournaments: tournamentsData,
@@ -120,7 +128,7 @@ function App() {
     [selectedSports],
   )
 
-  const filteredMatches = useMemo(
+  const matchesFilteredBySportAndTournament = useMemo(
     () =>
       filtereMatchesBySportAndTournament({
         allMatches: matchesData,
@@ -131,9 +139,14 @@ function App() {
     [selectedTournaments, selectedSports],
   )
 
-  const filteredMatchesBySearchTerm = useMemo(
-    () => filterMatchesBySearchTerm({ matches: filteredMatches, searchTerm }),
-    [filteredMatches, searchTerm],
+  // Final filtering phase
+  const matchesFilteredBySearchTerm = useMemo(
+    () =>
+      filterMatchesBySearchTerm({
+        matches: matchesFilteredBySportAndTournament,
+        searchTerm,
+      }),
+    [matchesFilteredBySportAndTournament, searchTerm],
   )
 
   return (
@@ -167,11 +180,11 @@ function App() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <TournamnetSelection
-            tournaments={filteredTournaments}
+            tournaments={tournamentsFilteredBySport}
             selectedTournaments={selectedTournaments}
             onTournamentToggle={handleTournamentSelectionChange}
           />
-          <MatchesTable matches={filteredMatchesBySearchTerm} />
+          <MatchesTable matches={matchesFilteredBySearchTerm} />
         </Stack>
       </Flex>
     </Container>
