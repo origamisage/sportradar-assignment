@@ -134,7 +134,7 @@ export const sports: Array<Sport> = [
   {
     id: 3,
 
-    name: 'IceHockey',
+    name: 'Ice Hockey',
   },
 
   {
@@ -146,7 +146,7 @@ export const sports: Array<Sport> = [
   {
     id: 5,
 
-    name: 'American football',
+    name: 'American Football',
   },
 ]
 
