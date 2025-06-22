@@ -9,15 +9,66 @@ import {
   TextInput,
 } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
-import { matches, sports, tournaments } from '@/data'
+import { useState } from 'react'
+import type { Sport, Tournament } from '@/data'
+import {
+  matches as matchesData,
+  sports as sportsData,
+  tournaments as tournamentsData,
+} from '@/data'
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
 function App() {
+  const [selectedSports, setSelectedSports] = useState<Array<number>>([])
+  const [selectedTournaments, setSelectedTournaments] = useState<Array<number>>(
+    [],
+  )
+
+  const handleSportSelectionChange = (updatedSports: Array<number>) => {
+    setSelectedSports(updatedSports)
+    // Remove all the tournaments that are not related to the selected sports
+    const updatedTournaments = selectedTournaments.filter((tournament) => {
+      // Find the sportId that the tournament is related to
+      const relatedSportId = tournamentsData.find(
+        (t) => t.id === tournament,
+      )?.sportId
+      if (!relatedSportId) {
+        return false
+      }
+      return updatedSports.includes(relatedSportId)
+    })
+    setSelectedTournaments(updatedTournaments)
+  }
+
+  const handleTournamentSelectionChange = (
+    updatedTournaments: Array<number>,
+  ) => {
+    setSelectedTournaments(updatedTournaments)
+  }
+
+  // Filter tournaments based on the selected sports or show all tournaments if no sports are selected
+  const filteredTournaments =
+    selectedSports.length > 0
+      ? tournamentsData.filter((tournament) =>
+          selectedSports.includes(tournament.sportId),
+        )
+      : tournamentsData
+
   return (
     <Container size="xl" py="2rem">
+      <pre>
+        {JSON.stringify(
+          {
+            selectedSports,
+            selectedTournaments,
+          },
+          null,
+          2,
+        )}
+      </pre>
       <Flex
         direction={{
           base: 'column',
@@ -25,10 +76,18 @@ function App() {
         }}
         gap="md"
       >
-        <SportSelection />
+        <SportSelection
+          sports={sportsData}
+          selectedSports={selectedSports}
+          onSportToggle={handleSportSelectionChange}
+        />
         <Stack gap="md">
           <TextInput variant="filled" placeholder="Search..." />
-          <TournamnetSelection />
+          <TournamnetSelection
+            tournaments={filteredTournaments}
+            selectedTournaments={selectedTournaments}
+            onTournamentToggle={handleTournamentSelectionChange}
+          />
           <MatchesTable />
         </Stack>
       </Flex>
@@ -36,9 +95,22 @@ function App() {
   )
 }
 
-function SportSelection() {
+type SportSelectionProps = {
+  sports: Array<Sport>
+  selectedSports: Array<number>
+  onSportToggle: (updatedSports: Array<number>) => void
+}
+function SportSelection({
+  sports,
+  selectedSports,
+  onSportToggle,
+}: SportSelectionProps) {
   return (
-    <Chip.Group multiple>
+    <Chip.Group
+      multiple
+      value={selectedSports.map((id) => String(id))}
+      onChange={(sportIds) => onSportToggle(sportIds.map((id) => Number(id)))}
+    >
       <Flex
         direction={{
           sm: 'column',
@@ -69,9 +141,24 @@ function SportSelection() {
   )
 }
 
-function TournamnetSelection() {
+type TournamentSelectionProps = {
+  tournaments: Array<Tournament>
+  selectedTournaments: Array<number>
+  onTournamentToggle: (updatedTournaments: Array<number>) => void
+}
+function TournamnetSelection({
+  tournaments,
+  selectedTournaments,
+  onTournamentToggle,
+}: TournamentSelectionProps) {
   return (
-    <Checkbox.Group>
+    <Chip.Group
+      multiple
+      value={selectedTournaments.map((id) => String(id))}
+      onChange={(tournamentIds) =>
+        onTournamentToggle(tournamentIds.map((id) => Number(id)))
+      }
+    >
       <Group gap={'xs'}>
         {tournaments.map((tournament) => (
           <Chip key={tournament.id} value={String(tournament.id)}>
@@ -79,12 +166,12 @@ function TournamnetSelection() {
           </Chip>
         ))}
       </Group>
-    </Checkbox.Group>
+    </Chip.Group>
   )
 }
 
 function MatchesTable() {
-  const rows = matches.map((match) => {
+  const rows = matchesData.map((match) => {
     return (
       <Table.Tr key={match.id} c="dark.3">
         <Table.Td>{formatISODate(match.start_time)}</Table.Td>
