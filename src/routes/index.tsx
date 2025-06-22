@@ -1,25 +1,49 @@
 import { Container, Flex, Stack, TextInput } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
+import { z } from 'zod'
 import { SportSelection } from './SportSelection'
 import { TournamnetSelection } from './TournamnetSelection'
 import { MatchesTable } from './MatchesTable'
-import {
-  matches as matchesData,
-  sports as sportsData,
-  tournaments as tournamentsData,
-} from '@/data'
 import {
   filterMatchesBySearchTerm,
   filterMatchesBySportAndTournament,
   filterTournamentsBySport,
 } from '@/utils/filters'
+import { API_ENDPOINTS } from '@/constants'
+import { matchSchema, sportSchema, tournamentSchema } from '@/types'
 
 export const Route = createFileRoute('/')({
   component: App,
+  loader: async () => {
+    const [sports, tournaments, matches] = await Promise.all([
+      fetch('/api/' + API_ENDPOINTS.SPORTS).then((res) =>
+        res.json().then((data) => {
+          return z.array(sportSchema).parse(data)
+        }),
+      ),
+      fetch('/api/' + API_ENDPOINTS.TOURNAMENTS).then((res) =>
+        res.json().then((data) => {
+          return z.array(tournamentSchema).parse(data)
+        }),
+      ),
+      fetch('/api/' + API_ENDPOINTS.MATCHES).then((res) =>
+        res.json().then((data) => {
+          return z.array(matchSchema).parse(data)
+        }),
+      ),
+    ])
+    return { sports, tournaments, matches }
+  },
 })
 
 function App() {
+  const {
+    sports: sportsData,
+    tournaments: tournamentsData,
+    matches: matchesData,
+  } = Route.useLoaderData()
+
   const [selectedSports, setSelectedSports] = useState<Array<number>>([])
   const [selectedTournaments, setSelectedTournaments] = useState<Array<number>>(
     [],
