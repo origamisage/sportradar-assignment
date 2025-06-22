@@ -1,14 +1,30 @@
 import { Container, Flex, Stack, TextInput } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { SportSelection } from './SportSelection'
 import { TournamnetSelection } from './TournamnetSelection'
 import { MatchesTable } from './MatchesTable'
+import type { Tournament } from '@/data'
 import { sports as sportsData, tournaments as tournamentsData } from '@/data'
 
 export const Route = createFileRoute('/')({
   component: App,
 })
+
+function filterTournaments({
+  allTournaments,
+  selectedSports,
+}: {
+  allTournaments: Array<Tournament>
+  selectedSports: Array<number>
+}) {
+  if (selectedSports.length === 0) {
+    return allTournaments
+  }
+  return allTournaments.filter((tournament) =>
+    selectedSports.includes(tournament.sportId),
+  )
+}
 
 function App() {
   const [selectedSports, setSelectedSports] = useState<Array<number>>([])
@@ -39,12 +55,11 @@ function App() {
   }
 
   // Filter tournaments based on the selected sports or show all tournaments if no sports are selected
-  const filteredTournaments =
-    selectedSports.length > 0
-      ? tournamentsData.filter((tournament) =>
-          selectedSports.includes(tournament.sportId),
-        )
-      : tournamentsData
+  const filteredTournaments = useMemo(
+    () =>
+      filterTournaments({ allTournaments: tournamentsData, selectedSports }),
+    [selectedSports],
+  )
 
   return (
     <Container size="xl" py="2rem">
