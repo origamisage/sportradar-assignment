@@ -1,6 +1,7 @@
 import {
   Checkbox,
   Chip,
+  Container,
   Flex,
   Group,
   Stack,
@@ -16,23 +17,45 @@ export const Route = createFileRoute('/')({
 
 function App() {
   return (
-    <Flex direction={'row'}>
-      <SportSelection />
-      <Stack w="100%">
-        <TextInput variant="filled" placeholder="Search..." />
-        <TournamnetSelection />
-        <MatchesTable />
-      </Stack>
-    </Flex>
+    <Container size="xl" py="2rem">
+      <Flex
+        direction={{
+          base: 'column',
+          sm: 'row',
+        }}
+        gap="md"
+      >
+        <SportSelection />
+        <Stack gap="md">
+          <TextInput variant="filled" placeholder="Search..." />
+          <TournamnetSelection />
+          <MatchesTable />
+        </Stack>
+      </Flex>
+    </Container>
   )
 }
 
 function SportSelection() {
   return (
     <Chip.Group multiple>
-      <Stack>
+      <Flex
+        direction={{
+          sm: 'column',
+          base: 'row',
+        }}
+        gap="xs"
+        wrap={{
+          base: 'wrap',
+        }}
+      >
         {sports.map((sport) => (
           <Chip
+            styles={{
+              label: {
+                width: '100%',
+              },
+            }}
             size="md"
             key={sport.id}
             value={String(sport.id)}
@@ -41,7 +64,7 @@ function SportSelection() {
             {sport.name}
           </Chip>
         ))}
-      </Stack>
+      </Flex>
     </Chip.Group>
   )
 }
@@ -63,7 +86,7 @@ function TournamnetSelection() {
 function MatchesTable() {
   const rows = matches.map((match) => {
     return (
-      <Table.Tr key={match.id}>
+      <Table.Tr key={match.id} c="dark.3">
         <Table.Td>{formatISODate(match.start_time)}</Table.Td>
         <Table.Td>{formatMatch(match.status)}</Table.Td>
         <Table.Td>{match.home_team}</Table.Td>
@@ -75,19 +98,27 @@ function MatchesTable() {
   })
 
   return (
-    <Table withTableBorder verticalSpacing={'lg'} fz="sm">
+    // <Table.ScrollContainer minWidth={400}>
+    <Table
+      verticalSpacing={'md'}
+      horizontalSpacing="lg"
+      highlightOnHover
+      withTableBorder
+      fz="sm"
+    >
       <Table.Thead>
         <Table.Tr>
-          <Table.Th py="sm">Start Time</Table.Th>
-          <Table.Th py="sm">Status</Table.Th>
-          <Table.Th py="sm">Home Team</Table.Th>
-          <Table.Th py="sm">Away Team</Table.Th>
-          <Table.Th py="sm">Home Score</Table.Th>
-          <Table.Th py="sm">Away Score</Table.Th>
+          <Table.Th py="xs">Start Time</Table.Th>
+          <Table.Th py="xs">Status</Table.Th>
+          <Table.Th py="xs">Home Team</Table.Th>
+          <Table.Th py="xs">Away Team</Table.Th>
+          <Table.Th py="xs">Home Score</Table.Th>
+          <Table.Th py="xs">Away Score</Table.Th>
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>{rows}</Table.Tbody>
     </Table>
+    // </Table.ScrollContainer>
   )
 }
 
