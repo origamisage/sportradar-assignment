@@ -58,13 +58,35 @@ function filtereMatchesBySportAndTournament({
   return allMatches
 }
 
+function filterMatchesBySearchTerm({
+  matches,
+  searchTerm,
+}: {
+  matches: Array<Match>
+  searchTerm: string
+}) {
+  const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase()
+  if (normalizedSearchTerm.length === 0) {
+    return matches
+  }
+  return matches.filter(
+    (match) =>
+      match.home_team.toLowerCase().includes(normalizedSearchTerm) ||
+      match.away_team.toLowerCase().includes(normalizedSearchTerm),
+  )
+}
+
 function App() {
   const [selectedSports, setSelectedSports] = useState<Array<number>>([])
   const [selectedTournaments, setSelectedTournaments] = useState<Array<number>>(
     [],
   )
+  const [searchTerm, setSearchTerm] = useState('')
 
   const handleSportSelectionChange = (updatedSports: Array<number>) => {
+    // Reset the search term when sports are selected
+    setSearchTerm('')
+
     setSelectedSports(updatedSports)
     // Remove all the tournaments that are not related to the selected sports
     const updatedTournaments = selectedTournaments.filter((tournament) => {
@@ -83,6 +105,8 @@ function App() {
   const handleTournamentSelectionChange = (
     updatedTournaments: Array<number>,
   ) => {
+    // Reset the search term when tournaments are selected
+    setSearchTerm('')
     setSelectedTournaments(updatedTournaments)
   }
 
@@ -107,6 +131,11 @@ function App() {
     [selectedTournaments, selectedSports],
   )
 
+  const filteredMatchesBySearchTerm = useMemo(
+    () => filterMatchesBySearchTerm({ matches: filteredMatches, searchTerm }),
+    [filteredMatches, searchTerm],
+  )
+
   return (
     <Container size="xl" py="2rem">
       <pre>
@@ -114,6 +143,7 @@ function App() {
           {
             selectedSports,
             selectedTournaments,
+            searchTerm,
           },
           null,
           2,
@@ -132,13 +162,16 @@ function App() {
           onSportToggle={handleSportSelectionChange}
         />
         <Stack gap="md">
-          <TextInput variant="filled" placeholder="Search..." />
+          <TextInput
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <TournamnetSelection
             tournaments={filteredTournaments}
             selectedTournaments={selectedTournaments}
             onTournamentToggle={handleTournamentSelectionChange}
           />
-          <MatchesTable matches={filteredMatches} />
+          <MatchesTable matches={filteredMatchesBySearchTerm} />
         </Stack>
       </Flex>
     </Container>
