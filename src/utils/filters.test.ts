@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  filterMatchesBySearchTerm,
   filterMatchesBySportAndTournament,
   filterTournamentsBySport,
 } from './filters'
@@ -259,5 +260,79 @@ describe('filterMatchesBySportAndTournament', () => {
         selectedSports: [1], // Select a sport to trigger the sport filtering logic
       }),
     ).toEqual([]) // Should return empty as the match's sportId cannot be determined
+  })
+})
+
+describe('filterMatchesBySearchTerm', () => {
+  it('returns all matches if search term is empty', () => {
+    expect(filterMatchesBySearchTerm({ matches, searchTerm: '' })).toEqual(
+      matches,
+    )
+  })
+
+  it('filters matches by team name appearing as home', () => {
+    // 'Portland Trail Blazers' only appears as home
+    const homeTeam = 'Portland Trail Blazers'
+    const expected = matches.filter((m) =>
+      m.home_team.toLowerCase().includes(homeTeam.toLowerCase()),
+    )
+    expect(
+      filterMatchesBySearchTerm({ matches, searchTerm: homeTeam }),
+    ).toEqual(expected)
+  })
+
+  it('filters matches by team name appearing as away', () => {
+    // 'Philadelphia Flyers' only appears as away
+    const awayTeam = 'Philadelphia Flyers'
+    const expected = matches.filter((m) =>
+      m.away_team.toLowerCase().includes(awayTeam.toLowerCase()),
+    )
+    expect(
+      filterMatchesBySearchTerm({ matches, searchTerm: awayTeam }),
+    ).toEqual(expected)
+  })
+
+  it('filters matches by team name appearing as both home and away', () => {
+    // 'kings' appears as both home and away
+    const team = 'kings'
+    const expected = matches.filter(
+      (m) =>
+        m.home_team.toLowerCase().includes(team) ||
+        m.away_team.toLowerCase().includes(team),
+    )
+    expect(filterMatchesBySearchTerm({ matches, searchTerm: team })).toEqual(
+      expected,
+    )
+  })
+
+  it('returns the same results for different casing in search term', () => {
+    const lower = filterMatchesBySearchTerm({ matches, searchTerm: 'kings' })
+    const upper = filterMatchesBySearchTerm({ matches, searchTerm: 'KINGS' })
+    const mixed = filterMatchesBySearchTerm({ matches, searchTerm: 'KiNgS' })
+    expect(lower).toEqual(upper)
+    expect(lower).toEqual(mixed)
+  })
+
+  it('filters matches correctly with leading/trailing spaces in search term', () => {
+    const kingsMatches = matches.filter(
+      (m) =>
+        m.home_team.toLowerCase().includes('kings') ||
+        m.away_team.toLowerCase().includes('kings'),
+    )
+    expect(
+      filterMatchesBySearchTerm({ matches, searchTerm: '  kings  ' }),
+    ).toEqual(kingsMatches)
+  })
+
+  it('returns empty if no match found', () => {
+    expect(filterMatchesBySearchTerm({ matches, searchTerm: 'xyz' })).toEqual(
+      [],
+    )
+  })
+
+  it('returns empty if matches array is empty', () => {
+    expect(
+      filterMatchesBySearchTerm({ matches: [], searchTerm: 'kings' }),
+    ).toEqual([])
   })
 })
