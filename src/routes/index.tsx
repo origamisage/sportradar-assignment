@@ -87,6 +87,10 @@ function App() {
     setSelectedTournaments(updatedTournaments)
   }
 
+  const handleSearchTermChange = (searchTerm: string) => {
+    setSearchTerm(searchTerm)
+  }
+
   const tournamentsFilteredBySport = useMemo(
     () =>
       filterTournamentsBySport({
@@ -128,7 +132,7 @@ function App() {
         <Stack gap="lg" w="100%">
           <TextInput
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchTermChange(e.target.value)}
             variant="filled"
             placeholder="Search for a team"
             classNames={{
