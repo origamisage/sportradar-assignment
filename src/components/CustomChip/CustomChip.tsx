@@ -11,6 +11,7 @@ interface CustomChipProps extends CheckboxCardProps {
 function CustomChip({ leftSide, size, children, ...rest }: CustomChipProps) {
   return (
     <Checkbox.Card
+      unstyled
       mod={{
         size,
       }}
