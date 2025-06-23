@@ -1,16 +1,10 @@
 export function formatISODate(isoDateString: string) {
-  const fromatter = new Intl.DateTimeFormat('SI', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
-  return fromatter
-    .format(new Date(isoDateString))
-    .replace(',', ' ')
-    .replace('.', ':')
+  let formatted = isoDateString.replace('T', ' ')
+
+  if (formatted.endsWith('Z')) {
+    formatted = formatted.slice(0, -1)
+  }
+  return formatted
 }
 export function formatMatchStatus(status: string) {
   switch (status.toLocaleLowerCase()) {
