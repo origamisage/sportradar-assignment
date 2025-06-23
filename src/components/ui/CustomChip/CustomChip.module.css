@@ -1,6 +1,6 @@
 :root {
-  --custom-chip-inline-padding: 1rem;
-  --custom-chip-block-padding: 0.6rem;
+  --custom-chip-inline-padding: 0.8rem;
+  --custom-chip-block-padding: 0.5rem;
   --custom-chip-inline-padding-sm: 1rem;
   --custom-chip-block-padding-sm: 0.25rem;
   --custom-chip-bg: var(--mantine-color-gray-1);
