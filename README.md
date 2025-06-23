@@ -96,6 +96,4 @@ The application filters matches based on the following rules:
 
 ### Alternative Route
 
-An alternative filtering approach, where filters are managed via the URL, is available at `/alternative`.
-
 - **Alternative Filtering Route:** An alternative filtering approach, where filters are managed via the URL, is available at [http://localhost:3000/alternative](http://localhost:3000/alternative). This method provides bookmarkable URLs and might be a better fit for server-side filtering integrations.
