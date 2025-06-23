@@ -1,5 +1,13 @@
-import { Container, Flex, Stack, TextInput } from '@mantine/core'
-import { createFileRoute } from '@tanstack/react-router'
+import {
+  Alert,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Stack,
+  TextInput,
+} from '@mantine/core'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { MatchesTable } from './MatchesTable'
 import { SportSelection } from './SportSelection'
@@ -14,12 +22,30 @@ import { fetchMatches, fetchSports, fetchTournaments } from '@/api'
 export const Route = createFileRoute('/')({
   component: App,
   loader: async () => {
+    // if (Math.random() > 0) {
+    throw new Error('Something went wrong')
+    // }
     const [sports, tournaments, matches] = await Promise.all([
       fetchSports(),
       fetchTournaments(),
       fetchMatches(),
     ])
     return { sports, tournaments, matches }
+  },
+  errorComponent: () => {
+    const router = useRouter()
+    return (
+      <Center mt="lg">
+        <Alert radius="lg" title="Error" color="red">
+          <Stack align="start">
+            Something went wrong. Please try again later.
+            <Button color="red" radius="md" onClick={() => router.invalidate()}>
+              Try again
+            </Button>
+          </Stack>
+        </Alert>
+      </Center>
+    )
   },
 })
 
