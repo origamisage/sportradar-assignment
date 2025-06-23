@@ -3,13 +3,13 @@ import {
   Button,
   Center,
   Container,
-  Flex,
   Stack,
   TextInput,
 } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { Search01Icon as SearchIcon } from 'hugeicons-react'
+import classes from './Index.module.css'
 import {
   filterMatchesBySearchTerm,
   filterMatchesBySportAndTournament,
@@ -119,13 +119,7 @@ function App() {
 
   return (
     <Container size="lg" py="2rem">
-      <Flex
-        direction={{
-          base: 'column',
-          md: 'row',
-        }}
-        gap="xl"
-      >
+      <div className={classes.root}>
         <SportSelection
           sports={sportsData}
           selectedSports={selectedSports}
@@ -137,6 +131,9 @@ function App() {
             onChange={(e) => setSearchTerm(e.target.value)}
             variant="filled"
             placeholder="Search for a team"
+            classNames={{
+              input: classes.searchInput,
+            }}
             w="full"
             size="md"
             radius="md"
@@ -149,7 +146,7 @@ function App() {
           />
           <MatchesTable matches={matchesFilteredBySearchTerm} />
         </Stack>
-      </Flex>
+      </div>
     </Container>
   )
 }

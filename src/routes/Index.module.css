@@ -1,0 +1,20 @@
+.root {
+  display: flex;
+  column-gap: var(--mantine-spacing-xl);
+
+  @media (max-width: $mantine-breakpoint-md) {
+    flex-direction: column;
+    row-gap: var(--mantine-spacing-lg);
+  }
+}
+
+.searchInput {
+  &:focus-within {
+    outline: 2px solid var(--mantine-color-brand-5);
+    border-color: transparent;
+  }
+
+  &::placeholder {
+    color: var(--mantine-color-brand-4);
+  }
+}
