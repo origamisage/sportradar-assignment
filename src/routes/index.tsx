@@ -22,9 +22,6 @@ import { fetchMatches, fetchSports, fetchTournaments } from '@/api'
 export const Route = createFileRoute('/')({
   component: App,
   loader: async () => {
-    // if (Math.random() > 0) {
-    throw new Error('Something went wrong')
-    // }
     const [sports, tournaments, matches] = await Promise.all([
       fetchSports(),
       fetchTournaments(),
@@ -121,17 +118,6 @@ function App() {
 
   return (
     <Container size="xl" py="2rem">
-      <pre>
-        {JSON.stringify(
-          {
-            selectedSports,
-            selectedTournaments,
-            searchTerm,
-          },
-          null,
-          2,
-        )}
-      </pre>
       <Flex
         direction={{
           base: 'column',
