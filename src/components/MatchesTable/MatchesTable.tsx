@@ -1,5 +1,4 @@
-import { Table } from '@mantine/core'
-
+import { DataTable } from 'mantine-datatable'
 import type { Match } from '@/data'
 import {
   formatISODate,
@@ -11,41 +10,47 @@ type MatchesTableProps = {
   matches: Array<Match>
 }
 export function MatchesTable({ matches }: MatchesTableProps) {
-  const rows = matches.map((match) => {
-    return (
-      <Table.Tr key={match.id} c="dark.3">
-        <Table.Td>{formatISODate(match.start_time)}</Table.Td>
-        <Table.Td>{formatMatchStatus(match.status)}</Table.Td>
-        <Table.Td>{match.home_team}</Table.Td>
-        <Table.Td>{match.away_team}</Table.Td>
-        <Table.Td>{formatMatchScore(match.home_score)}</Table.Td>
-        <Table.Td>{formatMatchScore(match.away_score)}</Table.Td>
-      </Table.Tr>
-    )
-  })
-
   return (
-    <Table.ScrollContainer minWidth={600}>
-      <Table
-        verticalSpacing={'lg'}
-        horizontalSpacing="md"
-        highlightOnHover
-        withTableBorder
-        c="brand.5"
-        fz="sm"
-      >
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th py="xs">Start Time</Table.Th>
-            <Table.Th py="xs">Status</Table.Th>
-            <Table.Th py="xs">Home Team</Table.Th>
-            <Table.Th py="xs">Away Team</Table.Th>
-            <Table.Th py="xs">Home Score</Table.Th>
-            <Table.Th py="xs">Away Score</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
-      </Table>
-    </Table.ScrollContainer>
+    <DataTable
+      withTableBorder
+      borderRadius="md"
+      horizontalSpacing="md"
+      verticalSpacing="sm"
+      c="brand.6"
+      minHeight={210}
+      rowColor={() => 'brand.4'}
+      noRecordsText="No matches found"
+      records={matches}
+      columns={[
+        {
+          title: 'Start Time',
+          accessor: 'start_time',
+          render: ({ start_time }) => formatISODate(start_time),
+        },
+        {
+          title: 'Status',
+          accessor: 'status',
+          render: ({ status }) => formatMatchStatus(status),
+        },
+        {
+          title: 'Home Team',
+          accessor: 'home_team',
+        },
+        {
+          title: 'Away Team',
+          accessor: 'away_team',
+        },
+        {
+          title: 'Home Score',
+          accessor: 'home_score',
+          render: ({ home_score }) => formatMatchScore(home_score),
+        },
+        {
+          title: 'Away Score',
+          accessor: 'away_score',
+          render: ({ away_score }) => formatMatchScore(away_score),
+        },
+      ]}
+    />
   )
 }
