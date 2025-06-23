@@ -9,15 +9,16 @@ import {
 } from '@mantine/core'
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
-import { MatchesTable } from './MatchesTable'
-import { SportSelection } from './SportSelection'
-import { TournamnetSelection } from './TournamnetSelection'
+import { Search01Icon as SearchIcon } from 'hugeicons-react'
 import {
   filterMatchesBySearchTerm,
   filterMatchesBySportAndTournament,
   filterTournamentsBySport,
 } from '@/utils/filters'
 import { fetchMatches, fetchSports, fetchTournaments } from '@/api'
+import { SportSelection } from '@/components/SportSelection/SportSelection'
+import { TournamnetSelection } from '@/components/TournamentSelection/TournamnetSelection'
+import { MatchesTable } from '@/components/MatchesTable/MatchesTable'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -117,23 +118,29 @@ function App() {
   )
 
   return (
-    <Container size="xl" py="2rem">
+    <Container size="lg" py="2rem">
       <Flex
         direction={{
           base: 'column',
-          sm: 'row',
+          md: 'row',
         }}
-        gap="md"
+        gap="xl"
       >
         <SportSelection
           sports={sportsData}
           selectedSports={selectedSports}
           onSportToggle={handleSportSelectionChange}
         />
-        <Stack gap="md">
+        <Stack gap="lg" w="100%">
           <TextInput
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            variant="filled"
+            placeholder="Search for a team"
+            w="full"
+            size="md"
+            radius="md"
+            leftSection={<SearchIcon size={18} />}
           />
           <TournamnetSelection
             tournaments={tournamentsFilteredBySport}

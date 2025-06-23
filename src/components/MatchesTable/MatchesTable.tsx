@@ -31,6 +31,7 @@ export function MatchesTable({ matches }: MatchesTableProps) {
         horizontalSpacing="md"
         highlightOnHover
         withTableBorder
+        c="brand.5"
         fz="sm"
       >
         <Table.Thead>

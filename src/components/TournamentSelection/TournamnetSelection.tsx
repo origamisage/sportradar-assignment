@@ -1,6 +1,6 @@
 import { Group } from '@mantine/core'
 import type { Tournament } from '@/data'
-import { CustomChip } from '@/components/CustomChip/CustomChip'
+import { CustomChip } from '@/components/ui/CustomChip/CustomChip'
 
 type TournamentSelectionProps = {
   tournaments: Array<Tournament>
@@ -19,7 +19,7 @@ export function TournamnetSelection({
         onTournamentToggle(tournamentIds.map((id) => Number(id)))
       }
     >
-      <Group gap={'xs'} wrap={'wrap'}>
+      <Group gap={'xs'}>
         {tournaments.map((tournament) => (
           <CustomChip
             key={tournament.id}
